@@ -8,7 +8,7 @@ provider:
   stage: dev # setting the env stage to dev, this will be visible in the routes
   region: ap-south-1
   environment:
-    DATA_BASE: "mongodb+srv://Fundoo:fundonotes@cluster1.gqtvwcp.mongodb.net/fundoo"
+    DATA_BASE: Database.databaseName
     SECRET_KEY: roshni
 
 functions: # add 4 functions for CRUD
