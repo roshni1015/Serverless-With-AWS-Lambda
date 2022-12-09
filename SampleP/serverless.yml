@@ -1,0 +1,94 @@
+service: SampleP
+
+provider:
+  name: aws
+  runtime: nodejs16.x # set node.js runtime
+  memorySize: 128 # set the maximum memory of the Lambdas in Megabytes
+  timeout: 10 # the timeout is 10 seconds (default is 6 seconds)
+  stage: dev # setting the env stage to dev, this will be visible in the routes
+  region: ap-south-1
+  environment:
+    DATA_BASE: "mongodb+srv://Fundoo:fundonotes@cluster1.gqtvwcp.mongodb.net/fundoo"
+    SECRET_KEY: roshni
+
+functions: # add 4 functions for CRUD
+  UserRegistration:
+    handler: handler/Userhandler.UserRegistration # point to exported create function in handler.js
+    events:
+      - http:
+          path: users # path will be domain.name.com/dev/notes
+          method: post
+          cors: true
+  UserLogin:
+    handler: handler/Userhandler.UserLogin
+    events:
+      - http:
+          path: users/login # path will be domain.name.com/dev/notes/1
+          method: post
+          cors: true
+  getAll:
+    handler: handler/Userhandler.getAllUser # path will be domain.name.com/dev/notes
+    events:
+     - http:
+         path: users
+         method: get
+         cors: true
+  authorize:
+   handler: middleware/authorizer.user
+  createNote:
+    handler: handler/Notehandler.createNote # point to exported create function in handler.js
+    events:
+      - http:
+          path: notes # path will be domain.name.com/dev/notes
+          method: post
+          cors: true
+
+          # authorizer: 
+          #  name: authorize
+          #  identitySource: method.request.header.Authorization
+  getOneNote:
+    handler: handler/Notehandler.getOneNote
+    events:
+      - http:
+          path: notes/{id} # path will be domain.name.com/dev/notes/1
+          method: get
+          cors: true
+  getAllNote:
+    handler: handler/Notehandler.getAllNote # path will be domain.name.com/dev/notes
+    events:
+     - http:
+         path: notes
+         method: get
+         cors: true
+  updateNote:
+    handler: handler/Notehandler.updateNote # path will be domain.name.com/dev/notes/1
+    events:
+     - http:
+         path: notes/{id}
+         method: put
+         cors: true
+  isArchive:
+    handler: handler/Notehandler.isArchive
+    events:
+     - http:
+         path: notes/{id}/isArchive # path will be domain.name.com/dev/notes/1
+         method: put
+         cors: true
+  isTrash:
+    handler: handler/Notehandler.isTrash
+    events:
+     - http:
+         path: notes/{id}/isTrash # path will be domain.name.com/dev/notes/1
+         method: put
+         cors: true
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  authorizer:
+    users:
+      name: authorize
+      type: TOKEN
+      identitySource: method.request.header.Authorization
+      identityValidationExpression: Bearer (.*)
+plugins:
+- serverless-offline-local-authorizers-plugin
+- serverless-offline # adding the plugin to be able to run the offline emulation
