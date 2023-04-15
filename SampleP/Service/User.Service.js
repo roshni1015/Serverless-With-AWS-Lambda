@@ -6,7 +6,7 @@ import User from '../models/User.js';
 export const UserRegister = async  (body) =>{
     const details = JSON.parse(body)
     const email = await User.findOne({ EmailID: details.EmailID })
-    //console.log("email==================>", email.length);
+    //console.log("email===============>", email.length);
     if (email) {
       console.log("Email Id already exits");
     } else {
@@ -16,7 +16,7 @@ export const UserRegister = async  (body) =>{
       details.Password = hashPassword;
       console.log("After Hashing req body", details);
       const data = await User.create(details);
-      console.log("data==================>", data);
+      console.log("data===============>", data);
       return data;
 
     }
